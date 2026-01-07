@@ -5,58 +5,58 @@ disp('======================================');
 disp('        Matrix Operations Program');
 disp('======================================');
 
-runApp = true;
+runProgram = true;
 
-while runApp
+while runProgram
 
-    % Choose how matrix sizes relate
-    disp('Select matrix dimension relationship:');
-    disp('1. Matrices A and B have the SAME size');
-    disp('2. Matrices A and B have DIFFERENT sizes');
+    % ===== Dimension Choice =====
+    disp('Select matrix size option:');
+    disp('1. Matrix A and B have the SAME size');
+    disp('2. Matrix A and B have DIFFERENT sizes');
     sizeChoice = input('Enter your choice (1 or 2): ');
 
     if sizeChoice ~= 1 && sizeChoice ~= 2
-        disp('Invalid choice. Restarting input.');
+        disp('Invalid choice. Please try again.');
         continue;
     end
 
-    % Matrix input
+    % ===== Matrix Input =====
     if sizeChoice == 1
-        fprintf('\nEnter dimensions (shared by both matrices)\n');
-        matrixA = getMatrixFromUser('A');
-        matrixB = getMatrixWithFixedSize('B', size(matrixA));
+        fprintf('\nEnter size for both matrices\n');
+        A = getMatrix('A');
+        B = getMatrixSameSize('B', size(A));
     else
-        matrixA = getMatrixFromUser('A');
-        matrixB = getMatrixFromUser('B');
+        A = getMatrix('A');
+        B = getMatrix('B');
     end
 
-    % Check if operations requiring equal size are allowed
-    sameDimensions = isequal(size(matrixA), size(matrixB));
+    % ===== Size Check =====
+    sameSize = isequal(size(A), size(B));
 
-    if ~sameDimensions
+    if ~sameSize
         fprintf('\nWARNING: Matrices have different sizes.\n');
-        fprintf('Matrix A: %d x %d\n', size(matrixA));
-        fprintf('Matrix B: %d x %d\n', size(matrixB));
+        fprintf('Matrix A: %d x %d\n', size(A,1), size(A,2));
+        fprintf('Matrix B: %d x %d\n', size(B,1), size(B,2));
         fprintf('Addition and element-wise multiplication are disabled.\n\n');
     end
 
-    reuseMatrices = true;
+    keepMatrices = true;
 
-    % Operations menu
-    while reuseMatrices
+    % ===== Operations Menu =====
+    while keepMatrices
         disp('--------------------------------------');
         disp('Choose an operation:');
 
-        if sameDimensions
-            disp('1. A + B');
-            disp('2. A .* B');
+        if sameSize
+            disp('1. Add Matrices (A + B)');
+            disp('2. Element-wise Multiply (A .* B)');
         else
-            disp('1. A + B  [Unavailable]');
-            disp('2. A .* B [Unavailable]');
+            disp('1. Add Matrices (Unavailable)');
+            disp('2. Element-wise Multiply (Unavailable)');
         end
 
-        disp('3. Transpose A');
-        disp('4. Transpose B');
+        disp('3. Transpose Matrix A');
+        disp('4. Transpose Matrix B');
         disp('5. Enter new matrices');
         disp('6. Exit program');
         disp('--------------------------------------');
@@ -65,87 +65,97 @@ while runApp
 
         switch menuChoice
             case 1
-                if sameDimensions
-                    disp('Result:');
-                    disp(addMatrices(matrixA, matrixB));
+                if sameSize
+                    disp('Result of A + B:');
+                    disp(addMatrix(A, B));
                 else
                     disp('Operation not allowed.');
                 end
 
             case 2
-                if sameDimensions
-                    disp('Result:');
-                    disp(elementWiseMultiply(matrixA, matrixB));
+                if sameSize
+                    disp('Result of A .* B:');
+                    disp(multiplyMatrix(A, B));
                 else
                     disp('Operation not allowed.');
                 end
 
             case 3
-                disp('Transpose of A:');
-                disp(transposeMatrix(matrixA));
+                disp('Transpose of Matrix A:');
+                disp(getTranspose(A));
 
             case 4
-                disp('Transpose of B:');
-                disp(transposeMatrix(matrixB));
+                disp('Transpose of Matrix B:');
+                disp(getTranspose(B));
 
             case 5
-                reuseMatrices = false;
+                keepMatrices = false;
 
             case 6
-                reuseMatrices = false;
-                runApp = false;
-                disp('Program terminated.');
+                keepMatrices = false;
+                runProgram = false;
+                disp('Program ended.');
 
             otherwise
-                disp('Invalid selection.');
+                disp('Invalid choice. Try again.');
         end
     end
 end
 
 %% ===== Helper Functions =====
 
-function M = getMatrixFromUser(label)
-    fprintf('\nEnter dimensions for Matrix %s\n', label);
-    rows = input('Rows: ');
-    cols = input('Columns: ');
+function M = getMatrix(name)
+    fprintf('\nEnter size for Matrix %s\n', name);
 
-    if ~isscalar(rows) || ~isscalar(cols) || rows <= 0 || cols <= 0 || ...
-       rows ~= fix(rows) || cols ~= fix(cols)
-        error('Dimensions must be positive integers.');
+    rows = input('Number of rows: ');
+    cols = input('Number of columns: ');
+
+    if rows <= 0 || cols <= 0 || rows ~= fix(rows) || cols ~= fix(cols)
+        error('Rows and columns must be positive whole numbers.');
     end
 
-    fprintf('Enter values for Matrix %s:\n', label);
+    fprintf('Enter values for Matrix %s:\n', name);
     M = zeros(rows, cols);
 
     for r = 1:rows
         for c = 1:cols
-            M(r, c) = input(sprintf('%s(%d,%d): ', label, r, c));
+            val = input(sprintf('%s(%d,%d): ', name, r, c));
+            if isempty(val) || ~isnumeric(val)
+                error('Values must be numbers.');
+            end
+            M(r, c) = val;
         end
     end
 end
 
-function M = getMatrixWithFixedSize(label, matrixSize)
-    rows = matrixSize(1);
-    cols = matrixSize(2);
+function M = getMatrixSameSize(name, matSize)
+    rows = matSize(1);
+    cols = matSize(2);
 
-    fprintf('\nMatrix %s size: %d x %d\n', label, rows, cols);
+    fprintf('\nMatrix %s will be %d x %d\n', name, rows, cols);
+    fprintf('Enter values for Matrix %s:\n', name);
+
     M = zeros(rows, cols);
 
     for r = 1:rows
         for c = 1:cols
-            M(r, c) = input(sprintf('%s(%d,%d): ', label, r, c));
+            val = input(sprintf('%s(%d,%d): ', name, r, c));
+            if isempty(val) || ~isnumeric(val)
+                error('Values must be numbers.');
+            end
+            M(r, c) = val;
         end
     end
 end
 
-function result = addMatrices(A, B)
-    result = A + B;
+function C = addMatrix(A, B)
+    C = A + B;
 end
 
-function result = elementWiseMultiply(A, B)
-    result = A .* B;
+function C = multiplyMatrix(A, B)
+    C = A .* B;
 end
 
-function T = transposeMatrix(A)
+function T = getTranspose(A)
     T = A.';
 end
