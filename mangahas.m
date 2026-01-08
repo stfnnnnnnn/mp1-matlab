@@ -77,19 +77,19 @@ while runProgram
         end
 
         if squareA
-            disp('11. Eigenvalues & Eigenvectors of Matrix A');
+            disp('9. Eigenvalues & Eigenvectors of Matrix A');
         else
-            disp('11. Eigenvalues & Eigenvectors of Matrix A (Unavailable)');
+            disp('9. Eigenvalues & Eigenvectors of Matrix A (Unavailable)');
         end
 
         if squareB
-            disp('12. Eigenvalues & Eigenvectors of Matrix B');
+            disp('10. Eigenvalues & Eigenvectors of Matrix B');
         else
-            disp('12. Eigenvalues & Eigenvectors of Matrix B (Unavailable)');
+            disp('10. Eigenvalues & Eigenvectors of Matrix B (Unavailable)');
         end
 
-        disp('9. Enter new matrices');
-        disp('10. Exit program');
+        disp('11. Enter new matrices');
+        disp('12. Exit program');
         disp('--------------------------------------');
 
         menuChoice = getValidatedMenuChoice(1,12);
@@ -149,7 +149,7 @@ while runProgram
                     disp('Operation not allowed.');
                 end
 
-            case 11
+            case 9
                 if squareA
                     disp('Eigenvalues of Matrix A:');
                     disp(eig(A));
@@ -160,7 +160,7 @@ while runProgram
                     disp('Operation not allowed.');
                 end
 
-            case 12
+            case 10
                 if squareB
                     disp('Eigenvalues of Matrix B:');
                     disp(eig(B));
@@ -171,10 +171,10 @@ while runProgram
                     disp('Operation not allowed.');
                 end
 
-            case 9
+            case 11
                 keepMatrices = false;
 
-            case 10
+            case 12
                 keepMatrices = false;
                 runProgram = false;
                 disp('Program ended.');
